@@ -22,7 +22,7 @@ public class LogAspect {
     public void beforeMethod(JoinPoint joinPoint){
         StringBuilder stringBuilder = new StringBuilder();
         for(Object arg : joinPoint.getArgs()){
-            if(arg != joinPoint.getArgs()){
+            if(arg != null){
                 stringBuilder.append("arg: " + arg.toString() + "|");
             }
         }

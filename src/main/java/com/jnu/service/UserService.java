@@ -26,7 +26,9 @@ public class UserService {
     @Autowired
     private LoginTicketDAO loginTicketDAO;
 
-
+    public User selectByName(String name){
+        return userDAO.selectByName(name);
+    }
 
     /**
      * 实现注册功能

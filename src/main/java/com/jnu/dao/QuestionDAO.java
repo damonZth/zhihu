@@ -33,7 +33,7 @@ public interface QuestionDAO {
      * @return
      */
     @Select({"select", SELECT_FIELDS, "from", TABLE_NAME, "where id = #{id}"})
-    Question getById(int id);
+    Question selectById(int id);
 
     /**
      * 更新问题的commentCount
