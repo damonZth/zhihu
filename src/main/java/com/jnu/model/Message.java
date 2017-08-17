@@ -64,9 +64,9 @@ public class Message {
 
     public String getConversationId() {
         if(fromId < toId){
-            return String.format("%d__%d", fromId, toId);
+            return String.format("%d_%d", fromId, toId);
         }else{
-            return String.format("%d__%d", toId, fromId);
+            return String.format("%d_%d", toId, fromId);
         }
     }
 

@@ -1,10 +1,7 @@
 package com.jnu.dao;
 
 import com.jnu.model.Message;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.omg.IOP.TAG_ALTERNATE_IIOP_ADDRESS;
 
 import java.util.List;
@@ -16,20 +13,20 @@ import java.util.List;
 public interface MessageDAO {
     String TABLE_NAME = "message";
     String INSERT_FIELDS = "from_id, to_id, content, created_date, has_read, conversation_id";
-    String SELECT_FIELDS = "id, from_id, to_id, content, create_date, has_read, conversation_id";
+    String SELECT_FIELDS = "id, from_id, to_id, content, created_date, has_read, conversation_id";
 
     @Insert({"insert into", TABLE_NAME, "(", INSERT_FIELDS,
             ") values (#{fromId}, #{toId}, #{content}, #{createdDate}, #{hasRead}, #{conversationId})"})
     int addMessage(Message message);
 
-    @Select({"select", SELECT_FIELDS, "from", TABLE_NAME,
-            "where conversation_id = #{conversationId} order by desc limit #{offset}, #{limit}"})
-    List<Message> getConversationDetail(@Param("conversation") String conversation,
+    @Select({"select ", SELECT_FIELDS, " from ", TABLE_NAME,
+            " where conversation_id=#{conversationId} order by created_date desc limit #{offset}, #{limit}"})
+    List<Message> getConversationDetail(@Param("conversationId") String conversationId,
                                         @Param("offset") int offset,
                                         @Param("limit") int limit);
 
     @Select({"select count(id) from", TABLE_NAME,
-            "where has_read = 0 and to_id = #{userId} and conversationId = #{conversationId}"})
+            "where has_read = 0 and to_id = #{userId} and conversation_id = #{conversationId}"})
     int getConversationUnreadCount(@Param("userId") int userId,
                                    @Param("conversationId") String conversationId);
 
@@ -37,4 +34,9 @@ public interface MessageDAO {
     List<Message> getConversationList(@Param("userId") int userId,
                                       @Param("offset") int offset, @Param("limit") int limit);
 
+
+    //
+    @Update({"update", TABLE_NAME, "set has_read = #{hasRead} where conversation_id = #{conversationId}"})
+    void updateStatus(@Param("conversationId") String conversationId,
+                      @Param("hasRead") int hasRead);
 }

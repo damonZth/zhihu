@@ -37,6 +37,14 @@ public class CommentService {
         return commentDAO.getCommentCount(entityId, entityType);
     }
 
+    public int getUserCommentCount(int userId){
+        return commentDAO.getUserCommentCount(userId);
+    }
+
+//    public boolean deleteComment(int commentId){
+//        return commentDAO.updateStatus(commentId, 1) > 0;
+//    }
+
     /**
      * 通过设置comment的状态，使用标记留言被删除
      * @param entityId
@@ -44,5 +52,9 @@ public class CommentService {
      */
     public void deleteComment(int entityId, int entityType){
         commentDAO.updateStatus(entityId, entityType, 1);
+    }
+
+    public Comment getCommentById(int id){
+        return commentDAO.getCommentById(id);
     }
 }

@@ -1,8 +1,8 @@
 package com.jnu.controller;
 
-import com.jnu.model.HostHolder;
-import com.jnu.model.Question;
-import com.jnu.model.ViewObject;
+import com.jnu.model.*;
+import com.jnu.service.CommentService;
+import com.jnu.service.FollowService;
 import com.jnu.service.QuestionService;
 import com.jnu.service.UserService;
 import org.slf4j.Logger;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpSession;
+import javax.validation.executable.ValidateOnExecution;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +34,34 @@ public class IndexController {
     @Autowired
     QuestionService questionService;
 
+    @Autowired
+    CommentService commentService;
+
+    @Autowired
+    FollowService followService;
+
+    @Autowired
+    HostHolder hostHolder;
+
 
     @RequestMapping(path = {"/user/{userId}"},method = {RequestMethod.GET})
     public String userIndex(Model model,
                             @PathVariable("userId") int userId){
         model.addAttribute("vos", getQuestions(userId, 0, 10));
-        return "index";
+        User user = userService.getUser(userId);
+        ViewObject viewObject = new ViewObject();
+        viewObject.set("user", user);
+        viewObject.set("commentCount",commentService.getUserCommentCount(userId));
+        viewObject.set("followerCount",followService.getFollowerCount(EntityType.ENTITY_USER, userId));
+        viewObject.set("followeeCount", followService.getFolloweeCount(userId, EntityType.ENTITY_USER));
+        if(hostHolder.getUser() != null){
+            viewObject.set("followed", followService.isFollower(hostHolder.getUser().getId(), EntityType.ENTITY_USER, userId));
+        }else{
+            viewObject.set("followed", false);
+        }
+        model.addAttribute("profileUser", viewObject);
+
+        return "profile";
     }
 
     @RequestMapping(path = {"/","/index"},method = {RequestMethod.GET})

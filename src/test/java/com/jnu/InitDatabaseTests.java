@@ -2,8 +2,10 @@ package com.jnu;
 
 import com.jnu.dao.QuestionDAO;
 import com.jnu.dao.UserDAO;
+import com.jnu.model.EntityType;
 import com.jnu.model.Question;
 import com.jnu.model.User;
+import com.jnu.service.FollowService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +28,9 @@ public class InitDatabaseTests {
 	@Autowired
 	QuestionDAO questionDAO;
 
+	@Autowired
+	FollowService followService;
+
 	@Test
 	public void initDatabase() {
 		Random random = new Random();
@@ -37,22 +42,27 @@ public class InitDatabaseTests {
 			user.setSalt("");
 			userDAO.addUser(user);
 
+			//互相关注
+			for(int j = 1; j < i; ++j){
+				followService.follow(j, EntityType.ENTITY_USER, i);
+			}
+
 			user.setPassword("xx");
 			userDAO.updatePassword(user);
 
 			Question question = new Question();
 			question.setCommentCount(i);
 			Date date = new Date();
-			date.setTime(date.getTime() + 1000*3600*i);
+			date.setTime(date.getTime() + 1000*3600*5*i);
 			question.setCreatedDate(date);
 			question.setUserId(i+1);
 			question.setTitle(String.format("问题{%d}", i));
 			question.setContent(String.format("暂时随便评论点什么咯---- %d", i));
 			questionDAO.addQuestion(question);
 		}
-		Assert.assertEquals("xx", userDAO.selectById(1).getPassword());
-		userDAO.deleteById(1);
-		Assert.assertNull(userDAO.selectById(1));
+//		Assert.assertEquals("xx", userDAO.selectById(1).getPassword());
+//		userDAO.deleteById(1);
+//		Assert.assertNull(userDAO.selectById(1));
 
 		System.out.println(questionDAO.selectLatestQuestions(0,0,10));
 

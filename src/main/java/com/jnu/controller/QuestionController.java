@@ -2,6 +2,7 @@ package com.jnu.controller;
 
 import com.jnu.model.*;
 import com.jnu.service.CommentService;
+import com.jnu.service.LikeService;
 import com.jnu.service.QuestionService;
 import com.jnu.service.UserService;
 import com.jnu.utils.ZhihuUtil;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +33,8 @@ public class QuestionController {
     UserService userService;
     @Autowired
     CommentService commentService;
+    @Autowired
+    LikeService likeService;
 
     @RequestMapping(value = "/question/add", method = {RequestMethod.POST})
     @ResponseBody
@@ -67,6 +71,16 @@ public class QuestionController {
         for(Comment comment : commentList){
             ViewObject vo = new ViewObject();
             vo.set("comment", comment);
+            if(hostHolder.getUser() == null){
+                vo.set("liked", 0);
+            }else{
+                //System.out.println("status"+likeService.getLikeStatus(hostHolder.getUser().getId(), EntityType.ENTITY_COMMENT, comment.getId()));
+                vo.set("liked", likeService.getLikeStatus(hostHolder.getUser().getId(), EntityType.ENTITY_COMMENT, comment.getId()));
+            }
+            //这里就没从redis中取出值？？？
+            //System.out.println("likeCount"+likeService.getLikeCount(EntityType.ENTITY_COMMENT, comment.getId()));
+            vo.set("likeCount", likeService.getLikeCount(EntityType.ENTITY_COMMENT, comment.getId()));
+            //System.out.println("sdadad" + vo.get("likeCount"));
             vo.set("user", userService.getUser(comment.getUserId()));
             comments.add(vo);
         }
